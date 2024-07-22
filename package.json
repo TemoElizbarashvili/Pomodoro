@@ -1,0 +1,17 @@
+{
+    "name": "Pomodoro",
+    "version": "1.0.0",
+    "description": "Landing Page For Pomodoro App",
+    "main": "index.js",
+    "scripts": {
+      "watch:sass": "node-sass sass/main.scss css/style.css -w"
+    },
+    "author": "Temo",
+    "license": "ISC",
+    "devDependencies": {
+      "node-sass": "^9.0.0"
+    }
+  }
+  
+  
+  
