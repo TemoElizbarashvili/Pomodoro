@@ -1,0 +1,12 @@
+.heading-1 {
+    font-family: $font-headings;
+    line-height: 1;
+    font-size: 6rem;
+    font-weight: 300;
+    color: $accent-color;
+    text-transform: uppercase;
+
+    @media only screen and (max-width: 500px) {
+        font-size: 3rem;
+    }
+}

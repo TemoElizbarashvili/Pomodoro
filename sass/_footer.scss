@@ -1,0 +1,21 @@
+.footer {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    height: calc(20vh - 8rem);
+
+    &__text {
+        font-size: 5rem;
+        font-weight: 400;
+    }
+
+    @media only screen and (max-width: 900px) {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    @media only screen and (max-width: 600px) {
+        height: calc(30vh - 8rem);
+    }
+}

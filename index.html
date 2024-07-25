@@ -3,14 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="shortcut icon" type="image/png" href="img/icon.png">
-
     <title>Pomodoro</title>
-
 </head>
 <body>
+    <div class="popup" id="popup">
+        <div class="popup__close" id="popup_close">&#9932;</div>
+        <div class="popup__box">
+            <form action="#" class="popup__form">
+                <div class="form__col">
+                    <div class="form_group">
+                        <input type="text" name="study_time"  placeholder="Study time (mm:ss)"  
+                        class="popup__input" pattern="^(?:[0-5]?[0-9]):(?:[0-5][0-9])$" id="study_time">
+                        <label class="form__label" for="study_time">Study time (mm:ss)</label>
+                    </div>
     
+                    <div class="form_group">
+                        <input type="text" name="rest_time"  placeholder="Rest time (mm:ss)"  class="popup__input"
+                        pattern="^(?:[0-5]?[0-9]):(?:[0-5][0-9])$" id="rest_time">
+                        <label class="form__label" for="rest_time">Rest time (mm:ss)</label>
+                    </div>
+
+                    <div class="form_group">
+                        <input type="text" name="study_time"  placeholder="Big rest time (mm:ss)"  class="popup__input"
+                        pattern="^(?:[0-5]?[0-9]):(?:[0-5][0-9])$" id="big_rest_time">
+                        <label class="form__label" for="big_rest_time">Big rest time (mm:ss)</label>
+                    </div>
+
+                    <div class="form_group">
+                        <input type="text" name="study_time"  placeholder="Email address"  id="study_time" class="popup__input">
+                        <label class="form__label" for="study_time">Time of Studying: </label>
+                    </div>
+                </div>
+
+                <div class="form__col">
+                    <div class="form_group">
+                        <input type="text" name="study_time"  placeholder="Email address"  class="popup__input">
+                        <label class="form__label" for="study_time">Time of Studying: </label>
+                    </div>
+                    <div class="form_group">
+                        <input type="text" name="study_time"  placeholder="Email address"  class="popup__input">
+                        <label class="form__label" for="study_time">Time of Studying: </label>
+                    </div>
+                    <div class="form_group">
+                        <input type="text" name="study_time"  placeholder="Email address"  class="popup__input">
+                        <label class="form__label" for="study_time">Time of Studying: </label>
+                    </div>
+                    <div class="form_group">
+                        <input type="text" name="study_time"  placeholder="Email address"  class="popup__input">
+                        <label class="form__label" for="study_time">Time of Studying: </label>
+                    </div>
+                </div>
+            </form>
+
+           
+        </div>
+    </div>
+
+
+    <header class="header">
+        <h1 class="heading-1">Pomodoro</h1>
+        <div class="header__icons">
+            <svg class="header__icon" id="settings_button">
+                <use xlink:href="img/sprite.svg#icon-cog"></use>
+            </svg>
+            <svg class="header__icon">
+                <use xlink:href="img/sprite.svg#icon-sound"></use>
+            </svg>
+        </div>
+    </header>
+
+   
+    <div class="timer">
+            <h2 class="timer__text" id="timer_state">&nbsp;</h2>
+            <div class="timer__box" id="timer_text">
+            </div>
+            <div class="timer__utilities">
+                <svg class="timer__icon" id="play_button">
+                    <use xlink:href="img/sprite.svg#icon-controller-play"></use>
+                </svg>
+                <svg class="timer__icon" id="stop_button">
+                    <use xlink:href="img/sprite.svg#icon-controller-paus"></use>
+                </svg>
+                <svg class="timer__icon" id="reset_button" id="reset_button">
+                    <use xlink:href="img/sprite.svg#icon-back-in-time"></use>
+                </svg>
+            </div>
+    </div>
+
+    <footer class="footer">
+        <p class="footer__text">Studied: <span id="study_time_text">&nbsp;</span></p>
+        <p class="footer__text" >Rested: <span id="rest_time_text">&nbsp;</span></p>
+    </footer>
+    <script src="JS/index.js"></script>
 </body>
 </html>

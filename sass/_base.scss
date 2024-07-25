@@ -1,0 +1,67 @@
+// Colors
+$background-color: #121212; 
+$primary-text-color: #ffffff; 
+$secondary-text-color: #b0b0b0; 
+$accent-color: #bb86fc; 
+$button-background: #1f1f1f; 
+$button: #333333; 
+$border-color: #272727;
+$input-background: #1e1e1e;
+$input-text-color: #e0e0e0; 
+$timer-color: #03dac6; 
+
+// FONT VARIABLES
+$font-primary: 'Roboto', sans-serif;
+$font-headings: 'Montserrat', sans-serif;
+
+// RESPONSIVE BREAKPOINTS
+$bp-largest: 56,25em; // 900px
+
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+    font-size: 62.5%; // 1rem = 10px
+
+    @media only screen and (max-width: 900px) {
+        font-size: 50%;
+    }
+}
+
+body {
+    font-family: $font-primary;
+    background-color: $background-color;
+    color: $primary-text-color;
+    font-weight: 300;
+    line-height: 1.6;
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    fill: $accent-color;
+    border-radius: 1rem;
+    width: 1rem;
+
+}
+
+::-webkit-scrollbar-track {
+  width: .4rem;
+  background-color: $border-color;
+  color: $border-color;
+  border-radius: 0 1rem 1rem 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background:  $accent-color;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba($accent-color, .5);
+}
