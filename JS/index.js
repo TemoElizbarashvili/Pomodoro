@@ -2,9 +2,18 @@
 let timerConfig = {
     minutes: 30,
     seconds: 0,
-    study: { minutes: 30, seconds: 0 },
-    rest: { minutes: 5, seconds: 0 },
-    bigRest: { minutes: 15, seconds: 0 }
+    study: {
+        minutes: 30,
+        seconds: 0
+    },
+    rest: {
+        minutes: 5,
+        seconds: 0
+    },
+    bigRest: {
+        minutes: 15,
+        seconds: 0
+    }
 };
 
 let isStudying = true;
@@ -14,8 +23,16 @@ let autoStart = true;
 let isPlaying = false;
 let isMuted = false;
 let totalTime = {
-    studied: { hours: 0, minutes: 0, seconds: 0 },
-    rested: { hours: 0, minutes: 0, seconds: 0 }
+    studied: {
+        hours: 0,
+        minutes: 59,
+        seconds: 0
+    },
+    rested: {
+        hours: 0,
+        minutes: 59,
+        seconds: 0
+    }
 };
 
 // DOM elements
@@ -47,12 +64,12 @@ const elements = {
 function addEventListeners() {
     elements.soundIcon.addEventListener("click", toggleMute);
     elements.soundIconMute.addEventListener("click", toggleMute);
-    elements.inputs.studyTimeMinutes.addEventListener("change", updateInputValues);
-    elements.inputs.studyTimeSeconds.addEventListener("change", updateInputValues);
-    elements.inputs.restTimeMinutes.addEventListener("change", updateInputValues);
-    elements.inputs.restTimeSeconds.addEventListener("change", updateInputValues);
-    elements.inputs.bigRestTimeMinutes.addEventListener("change", updateInputValues);
-    elements.inputs.bigRestTimeSeconds.addEventListener("change", updateInputValues);
+    elements.inputs.studyTimeMinutes.addEventListener("change", () => updateInputValues('studyTimeMinutes'));
+    elements.inputs.studyTimeSeconds.addEventListener("change", () => updateInputValues('studyTimeSeconds'));
+    elements.inputs.restTimeMinutes.addEventListener("change", () => updateInputValues('restTimeMinutes'));
+    elements.inputs.restTimeSeconds.addEventListener("change", () => updateInputValues('restTimeSeconds'));
+    elements.inputs.bigRestTimeMinutes.addEventListener("change", () => updateInputValues('bigRestTimeMinutes'));
+    elements.inputs.bigRestTimeSeconds.addEventListener("change", () => updateInputValues('bigRestTimeSeconds'));
     elements.inputs.timerAutoStartCheck.addEventListener("change", () => {
         autoStart = elements.inputs.timerAutoStartCheck.checked;
     });
@@ -75,40 +92,58 @@ function togglePopup(show) {
     elements.popup.style.opacity = show ? 1 : 0;
 }
 
-function updateInputValues() {
-    let inputFields = ['studyTimeMinutes', 'studyTimeSeconds', 
-        'restTimeMinutes', 'restTimeSeconds', 
-        'bigRestTimeMinutes', 'bigRestTimeSeconds'];
-    inputFields.forEach(field => {
-        let inputElement = elements.inputs[field];
-        if (inputElement.checkValidity()) {
-            inputElement.style.color = '#b0b0b0';
-            switch(field) {
-                case "studyTimeMinutes":
-                    timerConfig.study.minutes = inputElement.value;
-                    break;
-                case "studyTimeSeconds":
-                    timerConfig.study.seconds = inputElement.value;
-                    break;
-                case "restTimeMinutes":
-                    timerConfig.rest.minutes = inputElement.value;
-                    break;
-                case "restTimeSeconds":
-                    timerConfig.rest.seconds = inputElement.value;
-                    break;
-                case "bigRestTimeMinutes":
-                    timerConfig.bigRest.minutes = inputElement.value;
-                    break;
-                case "bigRestTimeSeconds":
-                    timerConfig.bigRest.seconds = inputElement.value;
-                    break;
-            }
-            setCorrectTime();
-            updateTimeDisplay();
-        } else {
-            inputElement.style.color = 'red';
+function updateInputValues(field) {
+    let inputElement = elements.inputs[field];
+    if (inputElement.checkValidity()) {
+        inputElement.style.color = '#b0b0b0';
+        switch (field) {
+            case "studyTimeMinutes":
+                timerConfig.study.minutes = inputElement.value;
+                if (isStudying) {
+                    setCorrectTime();
+                    updateTimeDisplay();
+                }
+                break;
+            case "studyTimeSeconds":
+                timerConfig.study.seconds = inputElement.value;
+                if (isStudying) {
+                    setCorrectTime();
+                    updateTimeDisplay();
+                }
+                break;
+            case "restTimeMinutes":
+                timerConfig.rest.minutes = inputElement.value;
+                if (!isStudying) {
+                    setCorrectTime();
+                    updateTimeDisplay();
+                }
+                break;
+            case "restTimeSeconds":
+                timerConfig.rest.seconds = inputElement.value;
+                if (!isStudying) {
+                    setCorrectTime();
+                    updateTimeDisplay();
+                }
+                break;
+            case "bigRestTimeMinutes":
+                timerConfig.bigRest.minutes = inputElement.value;
+                if (!isStudying && restCount % 4 == 0) {
+                    setCorrectTime();
+                    updateTimeDisplay();
+                }
+                break;
+            case "bigRestTimeSeconds":
+                timerConfig.bigRest.seconds = inputElement.value;
+                if (!isStudying && restCount % 4 == 0) {
+                    setCorrectTime();
+                    updateTimeDisplay();
+                }
+                break;
         }
-    });
+
+    } else {
+        inputElement.style.color = 'red';
+    }
 }
 
 function updateTimeDisplay() {
@@ -126,9 +161,9 @@ function setTimerDisplay(minutes, seconds) {
 
 function formatTime(hours, minutes, seconds) {
     if (hours === null) {
-        return `${pad(minutes)}:${pad(seconds)}`;    
+        return `${pad(minutes)}:${pad(seconds)}`;
     }
-    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;    
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
 function pad(value) {
@@ -141,11 +176,10 @@ function updateState() {
 
 function alarmAudio() {
     alarm = setInterval(() => {
-        if (!isMuted){
+        if (!isMuted) {
             if (timerConfig.seconds === 0 && timerConfig.minutes === 0) {
                 elements.audio.play();
-            }
-            else {
+            } else {
                 elements.audio.pause();
             }
         }
@@ -156,68 +190,91 @@ function startTimer() {
     isPlaying = true;
     changeButtons();
     timer = setInterval(function() {
-        if (timerConfig.seconds === 0 || timerConfig.seconds < 0) {
-            if (timerConfig.minutes === 0 || timerConfig.minutes < 0) {
+        if (timerConfig.seconds <= 0) {
+            if (timerConfig.minutes <= 0) {
                 clearInterval(timer);
-                    setTimeout(() => {
-                        isStudying = !isStudying;
-                        alert('Time is up!');
-                        if (!isStudying) {
-                            restCount++;
-                        }
-                        setCorrectTime();
-                        updateTimeDisplay();
-                        updateState();
-                        if (autoStart) {
-                            startTimer();
-                            isPlaying = true;
-                        }
-                        else {
-                            isPlaying = false;
-                        }
-                        changeButtons();
-                    }, isMuted == true ? 0 : 2000);
+                setTimeout(() => {
+                    isStudying = !isStudying;
+                    alert('Time is up!');
+                    if (!isStudying) {
+                        restCount++;
+                    }
+                    setCorrectTime();
+                    updateTimeDisplay();
+                    updateState();
+                    if (autoStart) {
+                        startTimer();
+                        isPlaying = true;
+                    } else {
+                        isPlaying = false;
+                    }
+                    changeButtons();
+                }, isMuted == true ? 0 : 2000);
             } else {
                 timerConfig.minutes--;
                 timerConfig.seconds = 59;
                 if (isStudying) {
-                    if (totalTime.studied.minutes == 59){
-                        totalTime.studied.hours++;
-                        totalTime.studied.minutes = 0;
-                        totalTime.studied.seconds = 0;
-                    }
-                    else {
-                        if(totalTime.studied.seconds == 59 ){
+                    if (totalTime.studied.seconds == 59) {
+                        if (totalTime.studied.minutes == 59) {
+                            totalTime.studied.hours++;
+                            totalTime.studied.minutes = 0;
+                            totalTime.studied.seconds = 0;
+                        } else {
                             totalTime.studied.minutes++;
                             totalTime.studied.seconds = 0;
                         }
-                        totalTime.studied.seconds++;
                     }
-                }
-                else {
-                    if (totalTime.rested.seconds == 59)
-                    {
-                        totalTime.rested.minutes++;
-                        totalTime.rested.seconds = 0;
+                    totalTime.studied.seconds++;
+                } else {
+                    if (totalTime.rested.seconds == 59) {
+                        if (totalTime.rested.minutes == 59) {
+                            totalTime.rested.hours++;
+                            totalTime.rested.minutes = 0;
+                            totalTime.rested.seconds = 0;
+                        } else {
+                            totalTime.rested.minutes++;
+                            totalTime.rested.seconds = 0;
+                        }
+
+                    } else {
+                        totalTime.rested.seconds++;
                     }
-                    totalTime.rested.seconds++;
                 }
             }
         } else {
             timerConfig.seconds--;
             if (isStudying) {
-                totalTime.studied.seconds++;
-                if(totalTime.studied.seconds == 59) {
-                    totalTime.studied.minutes++;
+                if (totalTime.studied.seconds == 59) {
+                    if (totalTime.studied.minutes == 59) {
+                        totalTime.studied.hours++;
+                        totalTime.studied.minutes = 0;
+                        totalTime.studied.seconds = 0;
+                    } else {
+                        totalTime.studied.minutes++;
+                        totalTime.studied.seconds = 0;
+                    }
+                } else {
+                    totalTime.studied.seconds++;
                 }
-            }
-            else {
-                totalTime.rested.seconds++;
+            } else {
+                if (totalTime.rested.seconds == 59) {
+                    if (totalTime.rested.minutes == 59) {
+                        totalTime.rested.hours++;
+                        totalTime.rested.minutes = 0;
+                        totalTime.rested.seconds = 0;
+                    } else {
+                        totalTime.rested.minutes++;
+                        totalTime.rested.seconds = 0;
+                    }
+
+                } else {
+                    totalTime.rested.seconds++;
+                }
             }
         }
         updateTimeDisplay();
         updateInfoDisplay();
-    }, 1000);  
+    }, 1000);
 }
 
 function stopTimer() {
@@ -232,19 +289,16 @@ function resetTimer() {
     updateTimeDisplay();
     if (autoStart) {
         startTimer();
-    }
-    else
-    {
+    } else {
         isPlaying = false;
         changeButtons();
     }
 }
 
 function setCorrectTime() {
-    if (!isStudying && restCount == 3) {
+    if (!isStudying && restCount % 4 == 0) {
         timerConfig.minutes = timerConfig.bigRest.minutes;
         timerConfig.seconds = timerConfig.bigRest.seconds;
-        restCount = 0;
     } else if (!isStudying) {
         timerConfig.minutes = timerConfig.rest.minutes;
         timerConfig.seconds = timerConfig.rest.seconds;
