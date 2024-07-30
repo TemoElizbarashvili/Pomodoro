@@ -24,11 +24,17 @@
     }
 
     &__box {
+        padding: 2rem 4rem;
         height: 60%;
         width: 50%;
         overflow-y: scroll;
         background-color: black;
         border-radius: 1rem;
+
+        @media only screen and (max-width: 600px) {
+            width: 70%;
+            padding: 1rem 0;
+        }
 
     }
 
@@ -36,7 +42,13 @@
         padding: 2rem;
 
         display: flex;
+        flex-direction: column;
+            align-items: center;
         justify-content: center;
+
+        @media only screen and (max-width: 1200px) {
+            
+        }
     }
 
     &__input {
@@ -49,7 +61,7 @@
         border-radius: 4px;
         border: none;
         border-bottom: 3px solid transparent;
-        width: 90%;
+        width: 100%;
         display: block;
         transition: all .3s;
      
@@ -79,15 +91,12 @@
 }
 
 .form__label {
-    font-size: 1.7rem;
+    font-size: 1.4rem;
     font-weight: 700;
     margin-left: 1.4rem;
     margin-top: .9rem;
-    display: block;
     transition: all .2s;
-    align-self: flex-start;
-    margin-left: 4rem;
-
+    
     color: $secondary-text-color;
 }
 
@@ -95,8 +104,18 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
+
+    &__text {
+        font-size: 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: $primary-text-color;
+        font-family: $font-headings;
+        margin-bottom: 1rem;
+    }
 
     &:not(:last-child) {
         margin-bottom: 2rem;
@@ -104,10 +123,90 @@
 }
 
 .form__col {
-    width: 50%;
+    width: 100%;
     margin-top: 4rem;
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+
+}
+
+.form_input_box {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+
+    @media only screen and (max-width: 1200px) {
+        width: 100%;
+    }
+}
+
+.form_group_inputs {
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+
+    @media only screen and (max-width: 1200px) {
+        flex-direction: column;       
+    }
+}
+
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 2.3rem;
+    user-select: none;
+    align-self: flex-start;
+    justify-content: center;
+    margin: 1rem 4rem;
+    position: relative;
+
+    @media only screen and (max-width: 1200px) {
+        align-self: center;    
+        margin: 0;
+    }
+}
+  
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+  
+  .checkmark {
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+    background-color: $secondary-text-color;
+    border-radius: 4px;
+    margin-right: 10px;
+    transition: all .2s;
+
+    &:after {
+        content: "+";
+        width: 3rem;
+        height: 3rem;
+        display: none;
+        margin: 0;
+    }
+}
+
+.custom-checkbox input:checked + .checkmark {
+  background-color: $accent-color;
+}
+
+.custom-checkbox input:checked + .checkmark:after {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-checkbox .checkmark:after {
+  font-weight: 800;
+  color: $border-color;
 }

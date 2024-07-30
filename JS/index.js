@@ -1,138 +1,208 @@
-let timerMinutes = 30;
-let timerSeconds = 0;
-let studyTimeMinutes = 0;
-let studyTimeSeconds = 4;
-let restTimeMinutes = 0;
-let restTimeSeconds = 10;
-let bigRestTimeMinutes = 15;
-let bigRestTimeSeconds = 0;
+// Timer and state variables
+let timerConfig = {
+    minutes: 30,
+    seconds: 0,
+    study: { minutes: 30, seconds: 0 },
+    rest: { minutes: 5, seconds: 0 },
+    bigRest: { minutes: 15, seconds: 0 }
+};
+
 let isStudying = true;
 let restCount = 0;
 let timer;
-let autoStart = false;
+let autoStart = true;
 let isPlaying = false;
-let totalStudiedHours= 0;
-let totalStudiedMinutes = 0;
-let totalStudiedSeconds = 0;
-let totalRestedHours = 0;
-let totalRestedMinutes = 0;
-let totalRestedSeconds = 0;
+let isMuted = false;
+let totalTime = {
+    studied: { hours: 0, minutes: 0, seconds: 0 },
+    rested: { hours: 0, minutes: 0, seconds: 0 }
+};
 
+// DOM elements
+const elements = {
+    timerText: document.getElementById("timer_text"),
+    stateText: document.getElementById("timer_state"),
+    resetButton: document.getElementById("reset_button"),
+    playButton: document.getElementById("play_button"),
+    stopButton: document.getElementById("stop_button"),
+    settingsButton: document.getElementById("settings_button"),
+    popup: document.getElementById("popup"),
+    popupCloseButton: document.getElementById("popup_close"),
+    totalStudyTime: document.getElementById("study_time_text"),
+    totalRestTime: document.getElementById("rest_time_text"),
+    soundIcon: document.getElementById("sound"),
+    soundIconMute: document.getElementById("sound_mute"),
+    audio: document.getElementById('myAudio'),
+    inputs: {
+        studyTimeMinutes: document.getElementById("study_time_minutes"),
+        studyTimeSeconds: document.getElementById("study_time_seconds"),
+        restTimeMinutes: document.getElementById("rest_time_minutes"),
+        restTimeSeconds: document.getElementById("rest_time_seconds"),
+        bigRestTimeMinutes: document.getElementById("big_rest_time_minutes"),
+        bigRestTimeSeconds: document.getElementById("big_rest_time_seconds"),
+        timerAutoStartCheck: document.getElementById("timer_auto_start"),
+    }
+};
 
-let timerTextElement = document.getElementById("timer_text");
-let stateText = document.getElementById("timer_state")
-let resetButton = document.getElementById("reset_button");
-let playButton = document.getElementById("play_button");
-let stopButton = document.getElementById("stop_button");
-let settingsButton = document.getElementById("settings_button");
-let popup = document.getElementById("popup");
-let popupCloseButton = document.getElementById("popup_close");
-let totalStudyTimeElement = document.getElementById("study_time_text");
-let totalRestTimeElement = document.getElementById("rest_time_text");
+function addEventListeners() {
+    elements.soundIcon.addEventListener("click", toggleMute);
+    elements.soundIconMute.addEventListener("click", toggleMute);
+    elements.inputs.studyTimeMinutes.addEventListener("change", updateInputValues());
+    elements.inputs.studyTimeSeconds.addEventListener("change", updateInputValues);
+    elements.inputs.restTimeMinutes.addEventListener("change", updateInputValues);
+    elements.inputs.restTimeSeconds.addEventListener("change", updateInputValues);
+    elements.inputs.bigRestTimeMinutes.addEventListener("change", updateInputValues);
+    elements.inputs.bigRestTimeSeconds.addEventListener("change", updateInputValues);
+    elements.inputs.timerAutoStartCheck.addEventListener("change", () => {
+        autoStart = elements.inputs.timerAutoStartCheck.checked;
+    });
+    elements.settingsButton.addEventListener("click", () => togglePopup(true));
+    elements.popupCloseButton.addEventListener("click", () => togglePopup(false));
+    elements.playButton.addEventListener("click", startTimer);
+    elements.stopButton.addEventListener("click", stopTimer);
+    elements.resetButton.addEventListener("click", resetTimer);
+}
 
-settingsButton.addEventListener("click", () => {
-    popup.style.visibility = "visible";
-    popup.style.scale = 1;
-    popup.style.opacity = 1;
-})
+function toggleMute() {
+    isMuted = !isMuted;
+    elements.soundIcon.style.display = isMuted ? 'none' : 'block';
+    elements.soundIconMute.style.display = isMuted ? 'block' : 'none';
+}
 
-popupCloseButton.addEventListener("click", () => {
-    popup.style.visibility = "hidden";
-    popup.style.opacity = 0;
-    popup.style.scale = .5;
+function togglePopup(show) {
+    elements.popup.style.visibility = show ? "visible" : "hidden";
+    elements.popup.style.scale = show ? 1 : 0.5;
+    elements.popup.style.opacity = show ? 1 : 0;
+}
 
-})
-
-playButton.addEventListener("click", () => {
-    console.log("clicked play!");
-    startTimer();
-});
-
-stopButton.addEventListener("click", () => {
-    console.log("clicked stop!");
-
-    stopTimer();
-})
-
-resetButton.addEventListener("click", () => {
-    console.log("clicked reset!");
-
-    resetTimer();
-})
-
-function updateState() {
-    stateText.innerText = isStudying ? "Studying" : "Resting";
+function updateInputValues() {
+    let inputFields = ['studyTimeMinutes', 'studyTimeSeconds', 
+        'restTimeMinutes', 'restTimeSeconds', 
+        'bigRestTimeMinutes', 'bigRestTimeSeconds'];
+    inputFields.forEach(field => {
+        let inputElement = elements.inputs[field];
+        if (inputElement.checkValidity()) {
+            inputElement.style.color = '#b0b0b0';
+            switch(field) {
+                case "studyTimeMinutes":
+                    timerConfig.study.minutes = inputElement.value;
+                    break;
+                case "studyTimeSeconds":
+                    timerConfig.study.seconds = inputElement.value;
+                    break;
+                case "restTimeMinutes":
+                    timerConfig.rest.minutes = inputElement.value;
+                    break;
+                case "restTimeSeconds":
+                    timerConfig.rest.seconds = inputElement.value;
+                    break;
+                case "bigRestTimeMinutes":
+                    timerConfig.bigRest.minutes = inputElement.value;
+                    break;
+                case "bigRestTimeSeconds":
+                    timerConfig.bigRest.seconds = inputElement.value;
+                    break;
+            }
+            setCorrectTime();
+            updateTimeDisplay();
+        } else {
+            inputElement.style.color = 'red';
+        }
+    });
 }
 
 function updateTimeDisplay() {
-    setTimer(timerMinutes, timerSeconds);
+    setTimerDisplay(timerConfig.minutes, timerConfig.seconds);
 }
 
 function updateInfoDisplay() {
-    let hoursDisplay = totalRestedHours < 10 ? '0' + totalRestedHours : totalRestedHours;
-    let minutesDisplay = totalRestedMinutes < 10 ? '0' + totalRestedMinutes : totalRestedMinutes;
-    let secondsDisplay = totalRestedSeconds < 10 ? '0' + totalRestedSeconds : totalRestedSeconds;
-    totalRestTimeElement.innerText = `${hoursDisplay}:${minutesDisplay}:${secondsDisplay}`;
-    hoursDisplay = totalRestedHours < 10 ? '0' + totalRestedHours : totalRestedHours;
-    minutesDisplay = totalStudiedMinutes < 10 ? '0' + totalStudiedMinutes : totalStudiedMinutes;
-    secondsDisplay = totalStudiedSeconds < 10 ? '0' + totalStudiedSeconds : totalStudiedSeconds;
-    totalStudyTimeElement.textContent = `${hoursDisplay}:${minutesDisplay}:${secondsDisplay}`;
-
+    elements.totalRestTime.innerText = formatTime(totalTime.rested.hours, totalTime.rested.minutes, totalTime.rested.seconds);
+    elements.totalStudyTime.textContent = formatTime(totalTime.studied.hours, totalTime.studied.minutes, totalTime.studied.seconds);
 }
 
-function setTimer(minutes, seconds) {
-    let minutesDisplay = minutes < 10 ? '0' + minutes : minutes;
-    let secondsDisplay = seconds < 10 ? '0' + seconds : seconds;
-    timerTextElement.textContent = `${minutesDisplay}:${secondsDisplay}`;
+function setTimerDisplay(minutes, seconds) {
+    elements.timerText.textContent = formatTime(null, minutes, seconds);
+}
+
+function formatTime(hours, minutes, seconds) {
+    if (hours === null) {
+        return `${pad(minutes)}:${pad(seconds)}`;    
+    }
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;    
+}
+
+function pad(value) {
+    return value < 10 ? '0' + value : value;
+}
+
+function updateState() {
+    elements.stateText.innerText = isStudying ? "Studying" : "Resting";
+}
+
+function alarmAudio() {
+    alarm = setInterval(() => {
+        if (!isMuted){
+            if (timerConfig.seconds === 0 && timerConfig.minutes === 0) {
+                elements.audio.play();
+            }
+            else {
+                elements.audio.pause();
+            }
+        }
+    }, 1000);
 }
 
 function startTimer() {
     isPlaying = true;
     changeButtons();
     timer = setInterval(function() {
-        if (timerSeconds === 0) {
-            if (timerMinutes === 0) {
+        if (timerConfig.seconds === 0) {
+            if (timerConfig.minutes === 0) {
                 clearInterval(timer);
-                isStudying = !isStudying;
-                alert('Time is up!');
-                if (!isStudying) {
-                    restCount++;
-                }
-                setCorrectTime();
-                updateTimeDisplay();
-                updateState();
-                if (autoStart) {
-                    startTimer();
-                    isPlaying = true;
-                }
-                isPlaying = false;
-                changeButtons();
+                    setTimeout(() => {
+                        isStudying = !isStudying;
+                        alert('Time is up!');
+                        if (!isStudying) {
+                            restCount++;
+                        }
+                        setCorrectTime();
+                        updateTimeDisplay();
+                        updateState();
+                        if (autoStart) {
+                            startTimer();
+                            isPlaying = true;
+                        }
+                        else {
+                            isPlaying = false;
+                        }
+                        changeButtons();
+                    }, isMuted == true ? 0 : 2000);
             } else {
-                timerMinutes--;
-                timerSeconds = 59;
+                timerConfig.minutes--;
+                timerConfig.seconds = 59;
                 if (isStudying) {
                     if (totalStudiedMinutes = 59){
-                        totalStudiedHours++;
-                        totalRestedMinutes = 0;
-                        totalRestedSeconds = 0;
+                        totalTime.studied.hours++;
+                        totalTime.studied.minutes = 0;
+                        totalTime.studied.seconds = 0;
                     }
                     else {
-                        totalStudiedMinutes++;
-                        totalStudiedSeconds = 0;
+                        totalTime.studied.minutes++;
+                        totalTime.studied.seconds = 0;
                     }
                 }
                 else {
-                    totalRestedMinutes++;
-                    totalRestedSeconds = 0;
+                    totalTime.rested.minutes++;
+                    totalTime.rested.seconds = 0;
                 }
             }
         } else {
-            timerSeconds--;
+            timerConfig.seconds--;
             if (isStudying) {
-                totalStudiedSeconds++;
+                totalTime.studied.seconds++;
             }
             else {
-                totalRestedSeconds++;
+                totalTime.rested.seconds++;
             }
         }
         updateTimeDisplay();
@@ -162,35 +232,42 @@ function resetTimer() {
 
 function setCorrectTime() {
     if (!isStudying && restCount == 3) {
-        timerMinutes = bigRestTimeMinutes;
-        timerSeconds = bigRestTimeSeconds;
+        timerConfig.minutes = timerConfig.bigRest.minutes;
+        timerConfig.seconds = timerConfig.bigRest.seconds;
         restCount = 0;
-    }
-    else if (!isStudying) {
-        timerMinutes = restTimeMinutes;
-        timerSeconds = restTimeSeconds;
+    } else if (!isStudying) {
+        timerConfig.minutes = timerConfig.rest.minutes;
+        timerConfig.seconds = timerConfig.rest.seconds;
     } else {
-        timerMinutes = studyTimeMinutes;
-        timerSeconds = studyTimeSeconds;
+        timerConfig.minutes = timerConfig.study.minutes;
+        timerConfig.seconds = timerConfig.study.seconds;
     }
 }
 
 function changeButtons() {
-    if(isPlaying) {
-        playButton.style.display = "none";
-        stopButton.style.display = "block";
-
-    }
-    else {
-        stopButton.style.display = "none";
-        playButton.style.display = "block";
-
-    }
+    elements.playButton.style.display = isPlaying ? "none" : "block";
+    elements.stopButton.style.display = isPlaying ? "block" : "none";
 }
 
-setCorrectTime();
-updateTimeDisplay();
-updateInfoDisplay();
-updateState();
-changeButtons();
-//startTimer();
+function setInputValues() {
+    elements.inputs.bigRestTimeSeconds.value = timerConfig.bigRest.seconds;
+    elements.inputs.bigRestTimeMinutes.value = timerConfig.bigRest.minutes;
+    elements.inputs.restTimeSeconds.value = timerConfig.rest.seconds;
+    elements.inputs.restTimeMinutes.value = timerConfig.rest.minutes;
+    elements.inputs.studyTimeSeconds.value = timerConfig.study.seconds;
+    elements.inputs.studyTimeMinutes.value = timerConfig.study.minutes;
+}
+
+function initialize() {
+    elements.soundIconMute.style.display = 'none';
+    setCorrectTime();
+    updateTimeDisplay();
+    updateInfoDisplay();
+    updateState();
+    changeButtons();
+    setInputValues();
+    alarmAudio();
+    addEventListeners();
+}
+
+initialize();

@@ -11,56 +11,79 @@
     <title>Pomodoro</title>
 </head>
 <body>
+    <audio id="myAudio" src="img/alarm.wav" loop ></audio>
+
     <div class="popup" id="popup">
         <div class="popup__close" id="popup_close">&#9932;</div>
         <div class="popup__box">
+            <h3 class="heading-3">
+                Timer Settings
+            </h3>
             <form action="#" class="popup__form">
                 <div class="form__col">
                     <div class="form_group">
-                        <input type="text" name="study_time"  placeholder="Study time (mm:ss)"  
-                        class="popup__input" pattern="^(?:[0-5]?[0-9]):(?:[0-5][0-9])$" id="study_time">
-                        <label class="form__label" for="study_time">Study time (mm:ss)</label>
+                        <p class="form_group__text">
+                            Study Time
+                        </p>
+                        <div class="form_group_inputs">
+                            <div class="form_input_box">
+                                <input type="number" placeholder="Study time (minutes)"  
+                                class="popup__input" min="1" max="59" required id="study_time_minutes">
+                                <label class="form__label" for="study_time">Study time (minutes)</label>
+                            </div>
+                            
+                            <div class="form_input_box">
+                                <input type="number"  placeholder="Study time (seconds)"  
+                                class="popup__input" min="0" max="59" required id="study_time_seconds">
+                                <label class="form__label" for="study_time">Study time(seconds)</label>
+                            </div>
+                        </div>
                     </div>
     
                     <div class="form_group">
-                        <input type="text" name="rest_time"  placeholder="Rest time (mm:ss)"  class="popup__input"
-                        pattern="^(?:[0-5]?[0-9]):(?:[0-5][0-9])$" id="rest_time">
-                        <label class="form__label" for="rest_time">Rest time (mm:ss)</label>
+                        <p class="form_group__text">
+                            Rest Time
+                        </p>
+                        <div class="form_group_inputs">
+                            <div class="form_input_box">
+                                <input type="number" name="rest_time"  placeholder="Rest time (minutes)"  class="popup__input"
+                                min="1" max="59" required id="rest_time_minutes">
+                                <label class="form__label" for="rest_time">Rest time (minutes)</label>
+                            </div>
+
+                            <div class="form_input_box">
+                                <input type="number" name="rest_time"  placeholder="Rest time (seconds)"  class="popup__input"
+                                min="0" max="59" required id="rest_time_seconds">
+                                <label class="form__label" for="rest_time">Rest time (seconds)</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form_group">
-                        <input type="text" name="study_time"  placeholder="Big rest time (mm:ss)"  class="popup__input"
-                        pattern="^(?:[0-5]?[0-9]):(?:[0-5][0-9])$" id="big_rest_time">
-                        <label class="form__label" for="big_rest_time">Big rest time (mm:ss)</label>
-                    </div>
+                        <p class="form_group__text">
+                            Big Rest Time
+                        </p>
+                        <div class="form_group_inputs">
+                            <div class="form_input_box">
+                                <input type="number"  placeholder="Big rest time (minutes)"  class="popup__input"
+                                min="1" max="59" required id="big_rest_time_minutes">
+                                <label class="form__label" for="big_rest_time">Big rest time (mm:ss)</label>
+                            </div>
 
-                    <div class="form_group">
-                        <input type="text" name="study_time"  placeholder="Email address"  id="study_time" class="popup__input">
-                        <label class="form__label" for="study_time">Time of Studying: </label>
-                    </div>
-                </div>
-
-                <div class="form__col">
-                    <div class="form_group">
-                        <input type="text" name="study_time"  placeholder="Email address"  class="popup__input">
-                        <label class="form__label" for="study_time">Time of Studying: </label>
-                    </div>
-                    <div class="form_group">
-                        <input type="text" name="study_time"  placeholder="Email address"  class="popup__input">
-                        <label class="form__label" for="study_time">Time of Studying: </label>
-                    </div>
-                    <div class="form_group">
-                        <input type="text" name="study_time"  placeholder="Email address"  class="popup__input">
-                        <label class="form__label" for="study_time">Time of Studying: </label>
-                    </div>
-                    <div class="form_group">
-                        <input type="text" name="study_time"  placeholder="Email address"  class="popup__input">
-                        <label class="form__label" for="study_time">Time of Studying: </label>
+                            <div class="form_input_box">
+                                <input type="number"  placeholder="Big rest time (seconds)"  class="popup__input"
+                                min="0" max="59" required id="big_rest_time_seconds" max="59" min="0">
+                                <label class="form__label" for="big_rest_time">Big rest time (mm:ss)</label>
+                            </div>
+                        </div>
+                        <label class="custom-checkbox" >
+                            <input type="checkbox" checked id="timer_auto_start">
+                            <span class="checkmark"></span>
+                            Timer auto start
+                        </label>
                     </div>
                 </div>
             </form>
-
-           
         </div>
     </div>
 
@@ -71,8 +94,11 @@
             <svg class="header__icon" id="settings_button">
                 <use xlink:href="img/sprite.svg#icon-cog"></use>
             </svg>
-            <svg class="header__icon">
+            <svg class="header__icon" id="sound">
                 <use xlink:href="img/sprite.svg#icon-sound"></use>
+            </svg>
+            <svg class="header__icon" id="sound_mute">
+                <use xlink:href="img/sprite.svg#icon-sound-mute"></use>
             </svg>
         </div>
     </header>
@@ -94,6 +120,7 @@
                 </svg>
             </div>
     </div>
+
 
     <footer class="footer">
         <p class="footer__text">Studied: <span id="study_time_text">&nbsp;</span></p>
