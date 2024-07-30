@@ -47,7 +47,7 @@ const elements = {
 function addEventListeners() {
     elements.soundIcon.addEventListener("click", toggleMute);
     elements.soundIconMute.addEventListener("click", toggleMute);
-    elements.inputs.studyTimeMinutes.addEventListener("change", updateInputValues());
+    elements.inputs.studyTimeMinutes.addEventListener("change", updateInputValues);
     elements.inputs.studyTimeSeconds.addEventListener("change", updateInputValues);
     elements.inputs.restTimeMinutes.addEventListener("change", updateInputValues);
     elements.inputs.restTimeSeconds.addEventListener("change", updateInputValues);
@@ -156,8 +156,8 @@ function startTimer() {
     isPlaying = true;
     changeButtons();
     timer = setInterval(function() {
-        if (timerConfig.seconds === 0) {
-            if (timerConfig.minutes === 0) {
+        if (timerConfig.seconds === 0 || timerConfig.seconds < 0) {
+            if (timerConfig.minutes === 0 || timerConfig.minutes < 0) {
                 clearInterval(timer);
                     setTimeout(() => {
                         isStudying = !isStudying;
@@ -181,25 +181,35 @@ function startTimer() {
                 timerConfig.minutes--;
                 timerConfig.seconds = 59;
                 if (isStudying) {
-                    if (totalStudiedMinutes = 59){
+                    if (totalTime.studied.minutes == 59){
                         totalTime.studied.hours++;
                         totalTime.studied.minutes = 0;
                         totalTime.studied.seconds = 0;
                     }
                     else {
-                        totalTime.studied.minutes++;
-                        totalTime.studied.seconds = 0;
+                        if(totalTime.studied.seconds == 59 ){
+                            totalTime.studied.minutes++;
+                            totalTime.studied.seconds = 0;
+                        }
+                        totalTime.studied.seconds++;
                     }
                 }
                 else {
-                    totalTime.rested.minutes++;
-                    totalTime.rested.seconds = 0;
+                    if (totalTime.rested.seconds == 59)
+                    {
+                        totalTime.rested.minutes++;
+                        totalTime.rested.seconds = 0;
+                    }
+                    totalTime.rested.seconds++;
                 }
             }
         } else {
             timerConfig.seconds--;
             if (isStudying) {
                 totalTime.studied.seconds++;
+                if(totalTime.studied.seconds == 59) {
+                    totalTime.studied.minutes++;
+                }
             }
             else {
                 totalTime.rested.seconds++;
