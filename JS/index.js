@@ -25,12 +25,12 @@ let isMuted = false;
 let totalTime = {
     studied: {
         hours: 0,
-        minutes: 59,
+        minutes: 0,
         seconds: 0
     },
     rested: {
         hours: 0,
-        minutes: 59,
+        minutes: 0,
         seconds: 0
     }
 };
