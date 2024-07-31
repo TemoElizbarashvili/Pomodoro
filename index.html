@@ -72,15 +72,25 @@
 
                             <div class="form_input_box">
                                 <input type="number"  placeholder="Big rest time (seconds)"  class="popup__input"
-                                min="0" max="59" required id="big_rest_time_seconds" max="59" min="0">
+                                min="0" max="59" required id="big_rest_time_seconds">
                                 <label class="form__label" for="big_rest_time_seconds">Big rest time (mm:ss)</label>
                             </div>
                         </div>
-                        <label class="custom-checkbox" for="timer_auto_start" >
-                            <input type="checkbox" checked id="timer_auto_start">
-                            <span class="checkmark"></span>
-                            Timer auto start
-                        </label>
+                        
+                    </div>
+                    <div class="form_group_inputs">
+                        <div class="form_input_box">
+                            <input type="number"  placeholder="Big rest interval "  class="popup__input"
+                            min="1" max="10" required id="big_rest_interval" >
+                            <label class="form__label" for="big_rest_Interval">Big Rest Interval</label>
+                        </div>
+                        <div class="form_input_box">
+                            <label class="custom-checkbox" for="timer_auto_start" >
+                                <input type="checkbox" checked id="timer_auto_start">
+                                <span class="checkmark"></span>
+                                Timer auto start
+                            </label>
+                        </div>
                     </div>
                 </div>
             </form>

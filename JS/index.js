@@ -18,6 +18,7 @@ let timerConfig = {
 
 let isStudying = true;
 let restCount = 0;
+let restInterval = 4;
 let timer;
 let autoStart = true;
 let isPlaying = false;
@@ -58,6 +59,7 @@ const elements = {
         bigRestTimeMinutes: document.getElementById("big_rest_time_minutes"),
         bigRestTimeSeconds: document.getElementById("big_rest_time_seconds"),
         timerAutoStartCheck: document.getElementById("timer_auto_start"),
+        bigRestInterval: document.getElementById("big_rest_interval")
     }
 };
 
@@ -70,6 +72,7 @@ function addEventListeners() {
     elements.inputs.restTimeSeconds.addEventListener("change", () => updateInputValues('restTimeSeconds'));
     elements.inputs.bigRestTimeMinutes.addEventListener("change", () => updateInputValues('bigRestTimeMinutes'));
     elements.inputs.bigRestTimeSeconds.addEventListener("change", () => updateInputValues('bigRestTimeSeconds'));
+    elements.inputs.bigRestInterval.addEventListener("change", () => updateInputValues('bigRestInterval'))
     elements.inputs.timerAutoStartCheck.addEventListener("change", () => {
         autoStart = elements.inputs.timerAutoStartCheck.checked;
     });
@@ -127,17 +130,20 @@ function updateInputValues(field) {
                 break;
             case "bigRestTimeMinutes":
                 timerConfig.bigRest.minutes = inputElement.value;
-                if (!isStudying && restCount % 4 == 0) {
+                if (!isStudying && restCount % restInterval == 0) {
                     setCorrectTime();
                     updateTimeDisplay();
                 }
                 break;
             case "bigRestTimeSeconds":
                 timerConfig.bigRest.seconds = inputElement.value;
-                if (!isStudying && restCount % 4 == 0) {
+                if (!isStudying && restCount % restInterval == 0) {
                     setCorrectTime();
                     updateTimeDisplay();
                 }
+                break;
+            case "bigRestInterval":
+                restInterval = inputElement.value;
                 break;
         }
 
@@ -296,7 +302,7 @@ function resetTimer() {
 }
 
 function setCorrectTime() {
-    if (!isStudying && restCount % 4 == 0) {
+    if (!isStudying && restCount % restInterval == 0) {
         timerConfig.minutes = timerConfig.bigRest.minutes;
         timerConfig.seconds = timerConfig.bigRest.seconds;
     } else if (!isStudying) {
@@ -320,6 +326,7 @@ function setInputValues() {
     elements.inputs.restTimeMinutes.value = timerConfig.rest.minutes;
     elements.inputs.studyTimeSeconds.value = timerConfig.study.seconds;
     elements.inputs.studyTimeMinutes.value = timerConfig.study.minutes;
+    elements.inputs.bigRestInterval.value = restInterval;
 }
 
 function initialize() {
